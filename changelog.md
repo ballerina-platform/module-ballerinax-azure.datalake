@@ -9,7 +9,6 @@ The connector moves to its own repository, `module-ballerinax-azure.datalake`, a
 
 ### Changed
 
-- **Breaking:** the minimum Ballerina distribution is now 2201.13.4 (was 2201.4.1).
 - **Breaking:** remote methods are renamed:
 
     | 1.5.1 | 2.0.0 |

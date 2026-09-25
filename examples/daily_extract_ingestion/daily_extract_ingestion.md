@@ -1,6 +1,6 @@
 # Daily extract ingestion
 
-This example lands a local data extract in Azure Data Lake Storage. It creates the target filesystem when it does not exist yet, creates a directory named after the extract date, uploads the file in chunks (append, then flush), lists the directory, and reads the file back to confirm that the stored content matches the local file.
+This example lands a local data extract in Azure Data Lake Storage. It creates the target filesystem when it does not exist yet, creates a directory named after the extract date, uploads the file in chunks (append, then flush) to a temporary path, reads it back range by range to confirm that the stored content matches the local file, renames it into place, and lists the directory. A rerun for the same date replaces the earlier extract only after the new upload is verified.
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ localFilePath = "<path-to-local-file>"
 chunkSize = 4194304
 ```
 
-`chunkSize` is optional and defaults to 4 MiB. Filesystem names must be 3 to 63 characters of lowercase letters, numbers and single dashes.
+`chunkSize` is optional, must be greater than zero, and defaults to 4 MiB. Filesystem names must be 3 to 63 characters of lowercase letters, numbers and single dashes.
 
 ## Run the example
 
