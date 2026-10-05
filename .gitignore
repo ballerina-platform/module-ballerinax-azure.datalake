@@ -53,3 +53,6 @@ build
 
 # Ignore Docker env file
 docker.env
+
+# Ignore example dependency lock files
+examples/*/Dependencies.toml
