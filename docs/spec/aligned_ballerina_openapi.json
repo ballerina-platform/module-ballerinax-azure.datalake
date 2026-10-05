@@ -2929,8 +2929,8 @@
                     },
                     "contentLength": {
                         "type": "integer",
-                        "format": "int64",
-                        "description": "The size of the file in bytes"
+                        "description": "The size of the file in bytes",
+                        "format": "int64"
                     },
                     "lastModified": {
                         "type": "string",
@@ -2938,8 +2938,8 @@
                     },
                     "isDirectory": {
                         "type": "boolean",
-                        "default": false,
-                        "description": "Whether the path is a directory"
+                        "description": "Whether the path is a directory",
+                        "default": false
                     },
                     "group": {
                         "type": "string",
@@ -2952,12 +2952,13 @@
                 "type": "object",
                 "properties": {
                     "error": {
+                        "type": "object",
+                        "description": "The service error response object",
                         "allOf": [
                             {
                                 "$ref": "#/components/schemas/DataLakeStorageErrorDetail"
                             }
-                        ],
-                        "description": "The service error response object"
+                        ]
                     }
                 },
                 "description": "An error returned by the Data Lake Storage service"
@@ -2967,10 +2968,10 @@
                 "properties": {
                     "filesystems": {
                         "type": "array",
+                        "description": "List of filesystems",
                         "items": {
                             "$ref": "#/components/schemas/Filesystem"
-                        },
-                        "description": "List of filesystems"
+                        }
                     }
                 },
                 "description": "A list of filesystems in the storage account"
@@ -2994,10 +2995,10 @@
                 "properties": {
                     "paths": {
                         "type": "array",
+                        "description": "List of paths",
                         "items": {
                             "$ref": "#/components/schemas/Path"
-                        },
-                        "description": "List of paths"
+                        }
                     }
                 },
                 "description": "A list of paths in a filesystem"
@@ -3062,8 +3063,8 @@
                 "explode": false,
                 "schema": {
                     "type": "string",
-                    "x-ms-parameter-location": "client",
-                    "default": "2019-10-31"
+                    "default": "2019-10-31",
+                    "x-ms-parameter-location": "client"
                 },
                 "x-ms-parameter-location": "client",
                 "x-ballerina-name": "xMsVersion"

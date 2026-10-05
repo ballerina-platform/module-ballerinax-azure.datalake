@@ -731,19 +731,7 @@
               }
             },
             "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "binary"
-                }
-              },
               "application/octet-stream" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "binary"
-                }
-              },
-              "text/plain" : {
                 "schema" : {
                   "type" : "string",
                   "format" : "binary"
@@ -878,19 +866,7 @@
               }
             },
             "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "binary"
-                }
-              },
               "application/octet-stream" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "binary"
-                }
-              },
-              "text/plain" : {
                 "schema" : {
                   "type" : "string",
                   "format" : "binary"
@@ -1877,14 +1853,14 @@
           "content" : {
             "application/octet-stream" : {
               "schema" : {
-                "type" : "object",
-                "format" : "file"
+                "type" : "string",
+                "format" : "binary"
               }
             },
             "text/plain" : {
               "schema" : {
-                "type" : "object",
-                "format" : "file"
+                "type" : "string",
+                "format" : "binary"
               }
             }
           },
@@ -2082,90 +2058,112 @@
         "type" : "object",
         "properties" : {
           "error" : {
-            "$ref" : "#/components/schemas/DataLakeStorageErrorError"
+            "type" : "object",
+            "description" : "The service error response object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/DataLakeStorageErrorError"
+            } ]
           }
-        }
-      },
-      "Path" : {
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "isDirectory" : {
-            "type" : "boolean",
-            "default" : false
-          },
-          "lastModified" : {
-            "type" : "string"
-          },
-          "eTag" : {
-            "type" : "string"
-          },
-          "contentLength" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "owner" : {
-            "type" : "string"
-          },
-          "group" : {
-            "type" : "string"
-          },
-          "permissions" : {
-            "type" : "string"
-          }
-        }
-      },
-      "PathList" : {
-        "type" : "object",
-        "properties" : {
-          "paths" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Path"
-            }
-          }
-        }
-      },
-      "Filesystem" : {
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "lastModified" : {
-            "type" : "string"
-          },
-          "eTag" : {
-            "type" : "string"
-          }
-        }
-      },
-      "FilesystemList" : {
-        "type" : "object",
-        "properties" : {
-          "filesystems" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Filesystem"
-            }
-          }
-        }
+        },
+        "description" : "An error returned by the Data Lake Storage service"
       },
       "DataLakeStorageErrorError" : {
         "type" : "object",
         "properties" : {
           "code" : {
             "type" : "string",
-            "description" : "The service error code."
+            "description" : "The service error code"
           },
           "message" : {
             "type" : "string",
-            "description" : "The service error message."
+            "description" : "The service error message"
           }
         },
-        "description" : "The service error response object."
+        "description" : "The service error response object"
+      },
+      "Path" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "description" : "The path of the file or directory, relative to the filesystem root"
+          },
+          "isDirectory" : {
+            "type" : "boolean",
+            "description" : "Whether the path is a directory",
+            "default" : false
+          },
+          "lastModified" : {
+            "type" : "string",
+            "description" : "The date and time the path was last modified, in RFC 1123 format"
+          },
+          "eTag" : {
+            "type" : "string",
+            "description" : "The entity tag (ETag) of the path"
+          },
+          "contentLength" : {
+            "type" : "integer",
+            "description" : "The size of the file in bytes",
+            "format" : "int64"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "The owner of the file or directory"
+          },
+          "group" : {
+            "type" : "string",
+            "description" : "The owning group of the file or directory"
+          },
+          "permissions" : {
+            "type" : "string",
+            "description" : "The POSIX access permissions for the owner, the owning group and others"
+          }
+        },
+        "description" : "A file or directory in a filesystem"
+      },
+      "PathList" : {
+        "type" : "object",
+        "properties" : {
+          "paths" : {
+            "type" : "array",
+            "description" : "List of paths",
+            "items" : {
+              "$ref" : "#/components/schemas/Path"
+            }
+          }
+        },
+        "description" : "A list of paths in a filesystem"
+      },
+      "Filesystem" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "description" : "The name of the filesystem"
+          },
+          "lastModified" : {
+            "type" : "string",
+            "description" : "The date and time the filesystem was last modified, in RFC 1123 format"
+          },
+          "eTag" : {
+            "type" : "string",
+            "description" : "The entity tag (ETag) of the filesystem"
+          }
+        },
+        "description" : "A filesystem in the storage account"
+      },
+      "FilesystemList" : {
+        "type" : "object",
+        "properties" : {
+          "filesystems" : {
+            "type" : "array",
+            "description" : "List of filesystems",
+            "items" : {
+              "$ref" : "#/components/schemas/Filesystem"
+            }
+          }
+        },
+        "description" : "A list of filesystems in the storage account"
       }
     },
     "responses" : {
@@ -2199,9 +2197,10 @@
       "Version" : {
         "name" : "x-ms-version",
         "in" : "header",
-        "description" : "Specifies the version of the REST protocol used for processing the request. This is required when using shared key authorization.",
+        "description" : "Specifies the version of the REST protocol used for processing the request. Required for every authorized request, including those that use a Microsoft Entra ID bearer token. Defaults to 2019-10-31",
         "schema" : {
           "type" : "string",
+          "default" : "2019-10-31",
           "x-ms-parameter-location" : "client"
         },
         "x-ms-parameter-location" : "client"

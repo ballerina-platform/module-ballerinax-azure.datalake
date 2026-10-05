@@ -19,43 +19,43 @@ These changes are done in order to improve the overall usability, and as workaro
 
    **Reason**: Data Lake Storage calls are authorized with a Microsoft Entra ID bearer token. With the scheme in place, the generated `ConnectionConfig` carries `http:BearerTokenConfig auth`.
 
-2. **Gave `x-ms-version` a default of `2019-10-31`** (applied to `docs/spec/aligned_ballerina_openapi.json`)
+2. **Gave `x-ms-version` a default of `2019-10-31`** (applied to `docs/spec/openapi.json`, before flatten and align)
 
-   **Location**: `components.parameters.Version` (the `x-ms-version` header, shared by all 12 operations)
+   **Location**: `parameters.Version` (the `x-ms-version` header, shared by all 12 operations)
 
    **Original**: An optional header with no default, described as "required when using shared key authorization".
 
-   **Updated**: `schema.default: "2019-10-31"`, and a description stating that the header is required for every authorized request, including those that use a bearer token.
+   **Updated**: `default: "2019-10-31"` (converted to `schema.default`), and a description stating that the header is required for every authorized request, including those that use a bearer token.
 
    **Reason**: Azure Storage rejects Microsoft Entra ID requests that do not send `x-ms-version` 2017-11-09 or later. With the default, every generated `*Headers` record has `string xMsVersion = "2019-10-31"`, so the header is sent even when the caller passes no headers.
 
-3. **Typed the append payload of `updatePath` as binary** (applied to `docs/spec/aligned_ballerina_openapi.json`)
+3. **Typed the append payload of `updatePath` as binary** (applied to `docs/spec/openapi.json`, before flatten and align)
 
-   **Location**: `PATCH /{filesystem}/{path}` — `requestBody.content` (`application/octet-stream` and `text/plain`)
+   **Location**: `PATCH /{filesystem}/{path}` — the `in: body` parameter `requestBody` (consumes `application/octet-stream` and `text/plain`)
 
-   **Original**: `{"type": "object", "format": "file"}`, which is how the Swagger 2.0 to OpenAPI 3.0 conversion renders the upstream `body` parameter.
+   **Original**: The body schema was `{"type": "object", "format": "file"}`, which the Swagger 2.0 to OpenAPI 3.0 conversion carries over as-is.
 
    **Updated**: `{"type": "string", "format": "binary"}`.
 
    **Reason**: The request body is the raw file data to append. The binary schema generates a `byte[] payload` parameter, which is what the previously published connector took.
 
-4. **Narrowed the `readFile` response to `application/octet-stream`** (applied to `docs/spec/aligned_ballerina_openapi.json`)
+4. **Narrowed the `readFile` response to `application/octet-stream`** (applied to `docs/spec/openapi.json`, before flatten and align)
 
-   **Location**: `GET /{filesystem}/{path}` — `responses.200.content` and `responses.206.content`
+   **Location**: `GET /{filesystem}/{path}` — the operation's `produces`
 
-   **Original**: Three content types (`application/json`, `application/octet-stream`, `text/plain`), each with a `string`/`binary` schema.
+   **Original**: Three `produces` types (`application/json`, `application/octet-stream`, `text/plain`), each converted to a `string`/`binary` schema for the `200` and `206` responses (their schema is `type: file`).
 
-   **Updated**: `application/octet-stream` only, with the same `string`/`binary` schema.
+   **Updated**: `produces: ["application/octet-stream"]` only, so the converted `200` and `206` content is `application/octet-stream` with the same `string`/`binary` schema.
 
    **Reason**: With three binary content types the generator returned `record {byte[] fileContent; string fileName;}`. The HTTP client cannot bind raw file bytes to that record, so every live read would fail. The service returns the file's own stored content type, whichever it is. The single binary content type generates `returns byte[]|error`, and binding to `byte[]` does not depend on the response content type.
 
-5. **Added descriptions to undocumented schemas and fields** (applied to `docs/spec/aligned_ballerina_openapi.json`)
+5. **Added descriptions to undocumented schemas and fields** (applied to `docs/spec/openapi.json`, before flatten and align)
 
-   **Location**: `components.schemas` — `Path`, `PathList`, `Filesystem`, `FilesystemList` and `DataLakeStorageError`, and every field of the first four
+   **Location**: `definitions` — `Path`, `PathList`, `Filesystem`, `FilesystemList` and `DataLakeStorageError`, and every field of the first four
 
    **Original**: No `description`.
 
-   **Updated**: Short descriptions, for example "The path of the file or directory, relative to the filesystem root" for `Path.name`. `DataLakeStorageError.error` was a bare `$ref`, so its description ("The service error response object") is kept by wrapping it as `{"allOf": [{"$ref": "..."}], "description": "..."}`.
+   **Updated**: Short descriptions, for example "The path of the file or directory, relative to the filesystem root" for `Path.name`. The inline `DataLakeStorageError.error` object was moved into its own definition, `DataLakeStorageErrorError` (renamed `DataLakeStorageErrorDetail` through `ai-mappings.json`), and the property now wraps it as `{"allOf": [{"$ref": "..."}], "description": "The service error response object"}`, because a bare `$ref` would lose its description. The conversion also adds a redundant `type: object` beside the `allOf`.
 
    **Reason**: The descriptions become the doc comments of the generated records. `DataLakeStorageError` is referenced only by the `default` error responses, which the client maps to `error`, so it is not generated into the package; its descriptions document the spec and the test mock.
 
