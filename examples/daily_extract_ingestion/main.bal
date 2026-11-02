@@ -41,9 +41,9 @@ public function main() returns error? {
 
     // Step 1: Create the filesystem if it does not exist yet.
     // A HEAD request carries no error body, so a missing filesystem is reported by status code.
-    http:Response properties = check datalake->getFilesystemProperties(filesystem, 'resource = "filesystem");
+    http:Response properties = check datalake->getFilesystemProperties(filesystem);
     if properties.statusCode == 404 {
-        check datalake->createFilesystem(filesystem, 'resource = "filesystem");
+        check datalake->createFilesystem(filesystem);
         io:println(string `Created filesystem '${filesystem}'`);
     } else if properties.statusCode != 200 {
         return error(string `Could not read filesystem '${filesystem}': HTTP ${properties.statusCode}`);
@@ -73,8 +73,8 @@ public function main() returns error? {
     io:println(string `Stored ${filesystem}/${filePath}`);
 
     // Step 6: List what the directory now holds.
-    datalake:PathList listing = check datalake->listPaths(filesystem, 'resource = "filesystem",
-        recursive = false, directory = directory);
+    datalake:PathList listing = check datalake->listPaths(filesystem, recursive = false,
+        directory = directory);
     foreach datalake:Path entry in listing.paths ?: [] {
         io:println(string `  ${entry.name ?: "<unnamed>"} (${entry.contentLength ?: 0} bytes)`);
     }

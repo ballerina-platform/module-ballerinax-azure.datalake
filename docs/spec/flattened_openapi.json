@@ -36,6 +36,7 @@
           "schema" : {
             "type" : "string",
             "enum" : [ "account" ],
+            "default" : "account",
             "x-ms-enum" : {
               "name" : "AccountResourceType",
               "modelAsString" : false
@@ -515,6 +516,7 @@
         "schema" : {
           "type" : "string",
           "enum" : [ "filesystem" ],
+          "default" : "filesystem",
           "x-ms-enum" : {
             "name" : "FilesystemResourceType",
             "modelAsString" : false

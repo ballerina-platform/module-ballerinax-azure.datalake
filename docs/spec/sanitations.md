@@ -1,6 +1,6 @@
 _Author_:  @DimuthuMadushan \
 _Created_: 2026/09/24 \
-_Updated_: 2026/10/30 \
+_Updated_: 2026/11/02 \
 _Edition_: Swan Lake
 
 # Sanitation for OpenAPI specification
@@ -60,6 +60,16 @@ These changes are done in order to improve the overall usability, and as workaro
    **Updated**: Short descriptions, for example "The path of the file or directory, relative to the filesystem root" for `Path.name`. The inline `DataLakeStorageError.error` object was moved into its own definition, `DataLakeStorageErrorError` (renamed `DataLakeStorageErrorDetail` through `ai-mappings.json`), and the property now wraps it as `{"allOf": [{"$ref": "..."}], "description": "The service error response object"}`, because a bare `$ref` would lose its description. The conversion also adds a redundant `type: object` beside the `allOf`.
 
    **Reason**: The descriptions become the doc comments of the generated records. `DataLakeStorageError` is referenced only by the `default` error responses, which the client maps to `error`, so it is not generated into the package; its descriptions document the spec and the test mock.
+
+6. **Gave the single-value `resource` query parameters a default** (applied to `docs/spec/openapi.json`, before flatten and align)
+
+   **Location**: `GET /` — the `resource` query parameter (`AccountResourceType`), and `/{filesystem}` — the path-level `resource` query parameter (`FilesystemResourceType`)
+
+   **Original**: A required string with a one-value `enum` (`account`, `filesystem`) and no default. AutoRest treats such an `x-ms-enum` with `modelAsString: false` as a constant and fills it in, but the generated `*Queries` records had a mandatory `"account" 'resource;` or `"filesystem" 'resource;` field that every caller had to set to its only possible value.
+
+   **Updated**: `default: "account"` and `default: "filesystem"` respectively.
+
+   **Reason**: The generated field becomes `"filesystem" 'resource = "filesystem";`, so callers can leave it out and the value is still sent. The optional two-value `resource` parameter of `PUT /{filesystem}/{path}` is unchanged.
 
 ## OpenAPI cli command
 

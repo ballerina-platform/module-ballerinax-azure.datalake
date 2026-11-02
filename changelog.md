@@ -30,10 +30,11 @@ The connector moves to its own repository, `module-ballerinax-azure.datalake`, a
     | `pathUpdate` | `updatePath` |
     | `pathGetproperties` | `getPathProperties` |
 
-- **Breaking:** optional headers and query parameters are no longer positional arguments. Each method takes a `<Method>Headers` record and named `<Method>Queries` arguments, and path parameters stay positional. For example, `filesystemList("account", prefix = "raw")` becomes `listFilesystems('resource = "account", prefix = "raw")`, and `pathLease(fs, path, "acquire", ...)` becomes `leasePath(fs, path, {xMsLeaseAction: "acquire", ...})`.
+- **Breaking:** optional headers and query parameters are no longer positional arguments. Each method takes a `<Method>Headers` record and named `<Method>Queries` arguments, and path parameters stay positional. For example, `filesystemList("account", prefix = "raw")` becomes `listFilesystems(prefix = "raw")`, and `pathLease(fs, path, "acquire", ...)` becomes `leasePath(fs, path, {xMsLeaseAction: "acquire", ...})`.
 - **Breaking:** `readFile` returns the file content as `byte[]` (was `string`).
 - **Breaking:** operations that return no body now return `error?` (was `http:Response|error`): `createFilesystem`, `deleteFilesystem`, `setFilesystemProperties`, `createPath`, `leasePath`, `deletePath` and `updatePath`. `getFilesystemProperties` and `getPathProperties` still return `http:Response`, because their results are carried in response headers.
 - The `x-ms-version` header now defaults to `2019-10-31`, which Azure Storage requires for bearer-token requests.
+- The `resource` query parameter of the filesystem operations and `listFilesystems` defaults to its only valid value (`"filesystem"` or `"account"`), so it can be omitted.
 - The package README replaces `Module.md` and `Package.md`.
 
 ### Removed

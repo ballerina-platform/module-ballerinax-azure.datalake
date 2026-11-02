@@ -251,6 +251,7 @@
             "enum": [
               "account"
             ],
+            "default": "account",
             "x-ms-enum": {
               "name": "AccountResourceType",
               "modelAsString": false
@@ -628,6 +629,7 @@
           "enum": [
             "filesystem"
           ],
+          "default": "filesystem",
           "x-ms-enum": {
             "name": "FilesystemResourceType",
             "modelAsString": false

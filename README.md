@@ -114,11 +114,11 @@ refreshToken = "<refresh-token>"
 
 ### Step 3: Invoke the connector operation
 
-List the filesystems in the storage account. Account-level operations take `'resource = "account"`.
+List the filesystems in the storage account.
 
 ```ballerina
 public function main() returns error? {
-    datalake:FilesystemList _ = check datalake->listFilesystems('resource = "account");
+    datalake:FilesystemList _ = check datalake->listFilesystems();
 }
 ```
 

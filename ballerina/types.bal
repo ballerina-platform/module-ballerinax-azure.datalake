@@ -250,7 +250,7 @@ public type DeletePathQueries record {
 # Represents the Queries record for the operation: getFilesystemProperties
 public type GetFilesystemPropertiesQueries record {
     # The value must be "filesystem" for all filesystem operations
-    "filesystem" 'resource;
+    "filesystem" 'resource = "filesystem";
     # An optional operation timeout value in seconds. The period begins when the request is received by the service. If the timeout value elapses before the operation completes, the operation fails
     @constraint:Int {minValue: 1}
     int:Signed32 timeout?;
@@ -289,7 +289,7 @@ public type ListPathsQueries record {
     # Optional. Valid only when Hierarchical Namespace is enabled for the account. If "true", the user identity values returned in the owner and group fields of each list entry will be transformed from Azure Active Directory Object IDs to User Principal Names.  If "false", the values will be returned as Azure Active Directory Object IDs. The default value is false. Note that group and application Object IDs are not translated because they do not have unique friendly names
     boolean upn?;
     # The value must be "filesystem" for all filesystem operations
-    "filesystem" 'resource;
+    "filesystem" 'resource = "filesystem";
     # An optional value that specifies the maximum number of items to return. If omitted or greater than 5,000, the response will include up to 5,000 items
     @constraint:Int {minValue: 1}
     int:Signed32 maxResults?;
@@ -332,7 +332,7 @@ public type FilesystemList record {
 # Represents the Queries record for the operation: deleteFilesystem
 public type DeleteFilesystemQueries record {
     # The value must be "filesystem" for all filesystem operations
-    "filesystem" 'resource;
+    "filesystem" 'resource = "filesystem";
     # An optional operation timeout value in seconds. The period begins when the request is received by the service. If the timeout value elapses before the operation completes, the operation fails
     @constraint:Int {minValue: 1}
     int:Signed32 timeout?;
@@ -573,7 +573,7 @@ public type UpdatePathHeaders record {
 # Represents the Queries record for the operation: listFilesystems
 public type ListFilesystemsQueries record {
     # The value must be "account" for all account operations
-    "account" 'resource;
+    "account" 'resource = "account";
     # Filters results to filesystems within the specified prefix
     string prefix?;
     # An optional value that specifies the maximum number of items to return. If omitted or greater than 5,000, the response will include up to 5,000 items
@@ -589,7 +589,7 @@ public type ListFilesystemsQueries record {
 # Represents the Queries record for the operation: setFilesystemProperties
 public type SetFilesystemPropertiesQueries record {
     # The value must be "filesystem" for all filesystem operations
-    "filesystem" 'resource;
+    "filesystem" 'resource = "filesystem";
     # An optional operation timeout value in seconds. The period begins when the request is received by the service. If the timeout value elapses before the operation completes, the operation fails
     @constraint:Int {minValue: 1}
     int:Signed32 timeout?;
@@ -598,7 +598,7 @@ public type SetFilesystemPropertiesQueries record {
 # Represents the Queries record for the operation: createFilesystem
 public type CreateFilesystemQueries record {
     # The value must be "filesystem" for all filesystem operations
-    "filesystem" 'resource;
+    "filesystem" 'resource = "filesystem";
     # An optional operation timeout value in seconds. The period begins when the request is received by the service. If the timeout value elapses before the operation completes, the operation fails
     @constraint:Int {minValue: 1}
     int:Signed32 timeout?;

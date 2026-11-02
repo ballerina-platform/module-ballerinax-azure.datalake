@@ -36,7 +36,7 @@ isolated function fixture(string name) returns string =>
 
 isolated function createFilesystemFixture(string name) returns string|error {
     string filesystem = fixture(name);
-    check datalake->createFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->createFilesystem(filesystem);
     return filesystem;
 }
 
@@ -50,48 +50,48 @@ isolated function writeFile(string filesystem, string path, string content) retu
 @test:Config {groups: ["live_tests", "mock_tests"]}
 isolated function testListFilesystems() returns error? {
     string filesystem = check createFilesystemFixture("list-filesystems");
-    FilesystemList response = check datalake->listFilesystems('resource = "account", prefix = filesystem);
+    FilesystemList response = check datalake->listFilesystems(prefix = filesystem);
     Filesystem[] filesystems = response.filesystems ?: [];
     test:assertEquals(filesystems.length(), 1);
     test:assertEquals(filesystems[0].name, filesystem);
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
 isolated function testCreateFilesystem() returns error? {
     string filesystem = fixture("create-filesystem");
-    check datalake->createFilesystem(filesystem, {xMsProperties: "owner=ZGF0YS10ZWFt"}, 'resource = "filesystem");
-    http:Response properties = check datalake->getFilesystemProperties(filesystem, 'resource = "filesystem");
+    check datalake->createFilesystem(filesystem, {xMsProperties: "owner=ZGF0YS10ZWFt"});
+    http:Response properties = check datalake->getFilesystemProperties(filesystem);
     test:assertEquals(properties.statusCode, 200);
     test:assertEquals(check properties.getHeader("x-ms-properties"), "owner=ZGF0YS10ZWFt");
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
 isolated function testDeleteFilesystem() returns error? {
     string filesystem = fixture("delete-filesystem");
-    check datalake->createFilesystem(filesystem, 'resource = "filesystem");
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
-    FilesystemList response = check datalake->listFilesystems('resource = "account", prefix = filesystem);
+    check datalake->createFilesystem(filesystem);
+    check datalake->deleteFilesystem(filesystem);
+    FilesystemList response = check datalake->listFilesystems(prefix = filesystem);
     test:assertEquals((response.filesystems ?: []).length(), 0);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
 isolated function testGetFilesystemProperties() returns error? {
     string filesystem = check createFilesystemFixture("get-filesystem-properties");
-    http:Response response = check datalake->getFilesystemProperties(filesystem, 'resource = "filesystem");
+    http:Response response = check datalake->getFilesystemProperties(filesystem);
     test:assertEquals(response.statusCode, 200);
     test:assertTrue((check response.getHeader("ETag")).length() > 0);
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
 isolated function testSetFilesystemProperties() returns error? {
     string filesystem = check createFilesystemFixture("set-filesystem-properties");
-    check datalake->setFilesystemProperties(filesystem, {xMsProperties: "stage=cmF3"}, 'resource = "filesystem");
-    http:Response response = check datalake->getFilesystemProperties(filesystem, 'resource = "filesystem");
+    check datalake->setFilesystemProperties(filesystem, {xMsProperties: "stage=cmF3"});
+    http:Response response = check datalake->getFilesystemProperties(filesystem);
     test:assertEquals(check response.getHeader("x-ms-properties"), "stage=cmF3");
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -101,15 +101,15 @@ isolated function testListPaths() returns error? {
     check writeFile(filesystem, "logs/app.log", "started\n");
     check writeFile(filesystem, "readme.txt", "sample\n");
 
-    PathList topLevel = check datalake->listPaths(filesystem, 'resource = "filesystem", recursive = false);
+    PathList topLevel = check datalake->listPaths(filesystem, recursive = false);
     test:assertEquals((topLevel.paths ?: []).length(), 2);
 
-    PathList logs = check datalake->listPaths(filesystem, 'resource = "filesystem", recursive = true, directory = "logs");
+    PathList logs = check datalake->listPaths(filesystem, recursive = true, directory = "logs");
     Path[] entries = logs.paths ?: [];
     test:assertEquals(entries.length(), 1);
     test:assertEquals(entries[0].name, "logs/app.log");
     test:assertFalse(entries[0].isDirectory);
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -125,7 +125,7 @@ isolated function testCreatePath() returns error? {
     test:assertEquals(check renamed.getHeader("x-ms-resource-type"), "directory");
     http:Response original = check datalake->getPathProperties(filesystem, "incoming");
     test:assertEquals(original.statusCode, 404, "the rename source should no longer exist");
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -140,7 +140,7 @@ isolated function testUpdatePath() returns error? {
 
     byte[] content = check datalake->readFile(filesystem, "events.csv");
     test:assertEquals(check string:fromBytes(content), "id,type\n1,click\n");
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -153,7 +153,7 @@ isolated function testReadFile() returns error? {
 
     byte[] head = check datalake->readFile(filesystem, "notes.txt", {range: "bytes=0-4"});
     test:assertEquals(check string:fromBytes(head), "hello");
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -165,7 +165,7 @@ isolated function testLeasePath() returns error? {
         {xMsLeaseAction: "acquire", xMsLeaseDuration: 15, xMsProposedLeaseId: leaseId});
     check datalake->leasePath(filesystem, "locked.txt", {xMsLeaseAction: "renew", xMsLeaseId: leaseId});
     check datalake->leasePath(filesystem, "locked.txt", {xMsLeaseAction: "release", xMsLeaseId: leaseId});
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -174,9 +174,9 @@ isolated function testDeletePath() returns error? {
     check datalake->createPath(filesystem, "tmp", 'resource = "directory");
     check writeFile(filesystem, "tmp/scratch.txt", "discard me");
     check datalake->deletePath(filesystem, "tmp", recursive = true);
-    PathList remaining = check datalake->listPaths(filesystem, 'resource = "filesystem", recursive = true);
+    PathList remaining = check datalake->listPaths(filesystem, recursive = true);
     test:assertEquals((remaining.paths ?: []).length(), 0);
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["live_tests", "mock_tests"]}
@@ -188,7 +188,7 @@ isolated function testGetPathProperties() returns error? {
 
     http:Response acl = check datalake->getPathProperties(filesystem, "config.json", action = "getAccessControl");
     test:assertTrue((check acl.getHeader("x-ms-acl")).startsWith("user::"));
-    check datalake->deleteFilesystem(filesystem, 'resource = "filesystem");
+    check datalake->deleteFilesystem(filesystem);
 }
 
 @test:Config {groups: ["mock_tests"]}
